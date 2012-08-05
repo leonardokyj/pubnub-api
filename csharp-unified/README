@@ -1,0 +1,111 @@
+## ---------------------------------------------------
+## UPDATE! UPDATE! UPDATE! UPDATE!
+## ---------------------------------------------------
+##
+## ---------------------------------------------------
+## If you are looking for an Asynchronous C# API:
+## https://github.com/pubnub/pubnub-api/csharp-unified
+## ---------------------------------------------------
+##
+## ---------------------------------------------------
+## Improved 3rd Party API:
+## https://github.com/pressf12/pubnub
+## ---------------------------------------------------
+## 
+## ---------------------------------------------------
+##
+## YOU MUST HAVE A PUBNUB ACCOUNT TO USE THE API.
+## http://www.pubnub.com/account
+##
+## ----------------------------------------------------
+
+## ----------------------------------------------
+## PubNub 3.0 Web Data Push Cloud-Hosted API - C#
+## ----------------------------------------------
+##
+## www.pubnub.com - PubNub Web Data Push Service in the Cloud. 
+## http://www.pubnub.com/tutorial/csharp-push-api
+##
+## PubNub is a Massively Scalable Web Push Service for Web and Mobile Games.
+## This is a cloud-based service for broadcasting messages
+## to thousands of web and mobile clients simultaneously.
+
+## -------------------------------------------
+## ARE YOU COMPILING WITH .NET OLDER THAN 3.5?
+## -------------------------------------------
+## YOU MUST USE System.Web.Extensions.dll included in this directory.
+
+===============================================================================
+PubNub C# Client API Boiler Plate
+===============================================================================
+
+
+-------------------------------------------------------------------------------
+C#: (Init)
+-------------------------------------------------------------------------------
+
+    Pubnub pubnub = new Pubnub(
+        "demo",  // PUBLISH_KEY
+        "demo",  // SUBSCRIBE_KEY
+        "",      // SECRET_KEY
+        false    // SSL_ON?
+    );
+
+
+-------------------------------------------------------------------------------
+C#: (Publish)
+-------------------------------------------------------------------------------
+
+    pubnub.PropertyChanged += new PropertyChangedEventhandler(Pubnub_PropertyChanged);
+    pubnub.publish(channel, message);
+	
+	void Pubnub_PropertyChanged(object sender, PropertyChangedEventArgs e)
+	{
+        Console.WriteLine(
+            "Publish Success: " + ((Pubnub)sender).Publish[0].ToString() +
+            "\nPublish Info: " + ((Pubnub)sender).Publish[1].ToString()
+        );
+	}
+
+-------------------------------------------------------------------------------
+C#: (Subscribe)
+-------------------------------------------------------------------------------
+
+    pubnub.PropertyChanged += new PropertyChangedEventhandler(Pubnub_PropertyChanged);
+	pubnub.subscribe(channel);
+
+	void Pubnub_PropertyChanged(object sender, PropertyChangedEventArgs e)
+	{
+        Dictionary<string, object> _message = (Dictionary<string, object>)(((Pubnub)sender).ReturnMessage);
+        Console.WriteLine("Received Message -> '" + _message["text"] + "'");
+	}
+
+-------------------------------------------------------------------------------
+C#: (History)
+-------------------------------------------------------------------------------
+
+    pubnub.PropertyChanged += new PropertyChangedEventhandler(Pubnub_PropertyChanged);
+	pubnub.history(channel, 10);
+
+    void Pubnub_PropertyChanged(object sender, PropertyChangedEventArgs e)
+	{
+        foreach (object history_message in ((Pubnub)sender).History)
+        {
+            Console.WriteLine("History Message: ");
+            Dictionary<string, object> _messageHistory = (Dictionary<string, object>)(history_message);
+            Console.WriteLine(_messageHistory["text"]);
+        }
+	}
+
+-------------------------------------------------------------------------------
+C#: (Timestamp)
+-------------------------------------------------------------------------------
+
+    pubnub.PropertyChanged += new PropertyChangedEventhandler(Pubnub_PropertyChanged);
+	pubnub.time();
+
+	void Pubnub_PropertyChanged(object sender, PropertyChangedEventArgs e)
+	{
+        Console.WriteLine("Time:  " + ((Pubnub)sender).Time[0].ToString());
+	}
+
