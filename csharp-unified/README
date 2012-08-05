@@ -59,13 +59,13 @@ C#: (Publish)
     pubnub.PropertyChanged += new PropertyChangedEventhandler(Pubnub_PropertyChanged);
     pubnub.publish(channel, message);
 	
-	void Pubnub_PropertyChanged(object sender, PropertyChangedEventArgs e)
-	{
+    void Pubnub_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
         Console.WriteLine(
             "Publish Success: " + ((Pubnub)sender).Publish[0].ToString() +
             "\nPublish Info: " + ((Pubnub)sender).Publish[1].ToString()
         );
-	}
+    }
 
 -------------------------------------------------------------------------------
 C#: (Subscribe)
