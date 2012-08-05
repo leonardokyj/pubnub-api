@@ -72,40 +72,42 @@ C#: (Subscribe)
 -------------------------------------------------------------------------------
 
     pubnub.PropertyChanged += new PropertyChangedEventhandler(Pubnub_PropertyChanged);
-	pubnub.subscribe(channel);
+    pubnub.subscribe(channel);
 
-	void Pubnub_PropertyChanged(object sender, PropertyChangedEventArgs e)
-	{
-        Dictionary<string, object> _message = (Dictionary<string, object>)(((Pubnub)sender).ReturnMessage);
+    void Pubnub_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        Dictionary<string, object> _message =
+                  (Dictionary<string, object>)(((Pubnub)sender).ReturnMessage);
         Console.WriteLine("Received Message -> '" + _message["text"] + "'");
-	}
+    }
 
 -------------------------------------------------------------------------------
 C#: (History)
 -------------------------------------------------------------------------------
 
     pubnub.PropertyChanged += new PropertyChangedEventhandler(Pubnub_PropertyChanged);
-	pubnub.history(channel, 10);
+    pubnub.history(channel, 10);
 
     void Pubnub_PropertyChanged(object sender, PropertyChangedEventArgs e)
-	{
+    {
         foreach (object history_message in ((Pubnub)sender).History)
         {
             Console.WriteLine("History Message: ");
-            Dictionary<string, object> _messageHistory = (Dictionary<string, object>)(history_message);
+            Dictionary<string, object> _messageHistory = 
+                  (Dictionary<string, object>)(history_message);
             Console.WriteLine(_messageHistory["text"]);
         }
-	}
+    }
 
 -------------------------------------------------------------------------------
 C#: (Timestamp)
 -------------------------------------------------------------------------------
 
     pubnub.PropertyChanged += new PropertyChangedEventhandler(Pubnub_PropertyChanged);
-	pubnub.time();
+    pubnub.time();
 
-	void Pubnub_PropertyChanged(object sender, PropertyChangedEventArgs e)
-	{
+    void Pubnub_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
         Console.WriteLine("Time:  " + ((Pubnub)sender).Time[0].ToString());
-	}
+    }
 
