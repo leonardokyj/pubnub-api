@@ -22,14 +22,18 @@ namespace PubNub_Messaging
             pubnub.PropertyChanged += new PropertyChangedEventHandler(Pubnub_PropertyChanged);
 
             Console.WriteLine("UUID -> " + pubnub.generateGUID());
-
+              
             pubnub.publish(channel, message);
 
-            pubnub.history(channel, 10);
+            pubnub.presence(channel);
 
-            pubnub.time();
+            //pubnub.history(channel, 10);
 
-            pubnub.subscribe(channel);
+            //pubnub.time();
+
+            //pubnub.here_now(channel);
+
+            //pubnub.subscribe(channel);
 
             Console.ReadKey();
         }
@@ -45,6 +49,8 @@ namespace PubNub_Messaging
                         Dictionary<string, object> _messageHistory = (Dictionary<string, object>)(history_message);
                         Console.WriteLine(_messageHistory["text"]);
                     }
+                    break;
+                case "Here_Now":
                     break;
                 case "Publish":
                     Console.WriteLine(

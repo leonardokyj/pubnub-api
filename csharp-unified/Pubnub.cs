@@ -39,6 +39,10 @@ namespace PubNub_Messaging
         private List<object> _History = new List<object>();
         public List<object> History { get { return _History; } set { _History = value; RaisePropertyChanged("History"); } }
 
+        // Here Now
+        private List<object> _Here_Now = new List<object>();
+        public List<object> Here_Now { get { return _Here_Now; } set { _Here_Now = value; RaisePropertyChanged("Here_Now"); } }
+
         // Subscribe
         private List<object> _Subscribe = new List<object>();
         public List<object> Subscribe
@@ -66,6 +70,7 @@ namespace PubNub_Messaging
         private string      SUBSCRIBE_KEY = "";
         public string       SECRET_KEY = "";
         private bool        SSL = false;
+        private string      sessionUUID = "";
 
         public delegate bool Procedure(object message);
 
@@ -74,7 +79,9 @@ namespace PubNub_Messaging
             Publish,
             History,
             Time,
-            Subscribe
+            Subscribe,
+            Presence,
+            Here_Now
         }
         /**
          * Pubnub instance initialization function
@@ -90,6 +97,7 @@ namespace PubNub_Messaging
             this.SUBSCRIBE_KEY = subscribe_key;
             this.SECRET_KEY = secret_key;
             this.SSL = ssl_on;
+            this.sessionUUID = Guid.NewGuid().ToString();
 
             // SSL is ON?
             if (this.SSL)
@@ -233,7 +241,7 @@ namespace PubNub_Messaging
                 url.Add(channel);
                 url.Add("0");
                 url.Add(timetoken.ToString());
-
+                
                 // Wait for message
                 _request(url, ResponseType.Subscribe);
 
@@ -249,6 +257,69 @@ namespace PubNub_Messaging
                 System.Threading.Thread.Sleep(1000);
                 this._subscribe(channel, timetoken);
             }
+        }
+        /**
+         * Presence feature
+         * 
+         * Listen for a presence message on a channel (BLOCKING)
+         * 
+         * @param String channel name. (+"pnpres")
+         * @param Procedure function callback
+         */
+        public void presence(string channel)
+        {
+            this._presence(channel, 0);
+        }
+        /**
+         * Presence feature - Private Interface
+         * 
+         * @param String channel name.
+         * @param Procedure function callback
+         * @param String timetoken.
+         */
+        
+        private void _presence(string channel, object timetoken)
+        {
+            // Begin recursive subscribe
+            try
+            {
+                // Build URL
+                List<string> url = new List<string>();
+                url.Add("subscribe");
+                url.Add(this.SUBSCRIBE_KEY);
+                url.Add(channel + "-pnpres");
+                url.Add("0");
+                url.Add(timetoken.ToString());
+
+                // Wait for message
+                _request(url, ResponseType.Subscribe);
+
+                if (Subscribe.Count > 0)
+                {
+                    // Update TimeToken
+                    if (Subscribe[1].ToString().Length > 0)
+                        timetoken = (object)Subscribe[1];
+                }
+            }
+            catch
+            {
+                System.Threading.Thread.Sleep(1000);
+                this._presence(channel, timetoken);
+            }
+        }
+
+        public bool here_now(string channel)
+        {
+            List<string> url = new List<string>();
+
+            url.Add("v2");
+            url.Add("presence");
+            url.Add("sub_key");
+            url.Add(this.SUBSCRIBE_KEY);
+            url.Add("channel");
+            url.Add(channel);
+            
+            return _request(url, ResponseType.Here_Now);
         }
         /**
          * Time
@@ -285,6 +356,12 @@ namespace PubNub_Messaging
             {
                 url.Append("/");
                 url.Append(_encodeURIcomponent(url_bit));
+            }
+
+            if (type == ResponseType.Subscribe)
+            {
+                url.Append("?uuid=");
+                url.Append(this.sessionUUID);
             }
 
             // Temporary fail if string too long
@@ -340,6 +417,9 @@ namespace PubNub_Messaging
                                     break;
                                 case ResponseType.History:
                                     History = result;
+                                    break;
+                                case ResponseType.Here_Now:
+                                    Here_Now = result;
                                     break;
                                 case ResponseType.Time:
                                     Time = result;
