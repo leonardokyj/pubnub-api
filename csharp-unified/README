@@ -111,3 +111,34 @@ C#: (Timestamp)
         Console.WriteLine("Time:  " + ((Pubnub)sender).Time[0].ToString());
     }
 
+-------------------------------------------------------------------------------
+C#: (Presence)
+-------------------------------------------------------------------------------
+
+    pubnub.PropertyChanged += delegate(object sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == "ReturnMessage")
+        {
+            Dictionary<string, object> _message = (Dictionary<string, object>)(((Pubnub)sender).ReturnMessage);
+            Console.WriteLine("Received Message -> '" + _message["text"] + "'");
+        }
+    };
+    pubnub.presence(channel);
+	
+-------------------------------------------------------------------------------
+C#: (Here Now)
+-------------------------------------------------------------------------------
+
+    pubnub.PropertyChanged += delegate(object sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == "Here_Now")
+        {
+            Dictionary<string, object> _message = (Dictionary<string, object>)(((Pubnub)sender).Here_Now[0]);
+            foreach (object uuid in (object[])_message["uuids"])
+            {
+                Console.WriteLine("UUID: " + uuid.ToString());
+            }
+            Console.WriteLine("Occupancy: " + _message["occupancy"].ToString());
+        }
+    };
+    pubnub.here_now(channel);
