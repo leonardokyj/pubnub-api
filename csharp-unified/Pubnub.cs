@@ -55,7 +55,8 @@ namespace PubNub_Messaging
             {
                 _Subscribe = value;
                 if (Int64.Parse(value[1].ToString()) > 0)
-                    _subscribe(value[2].ToString(), Int64.Parse(value[1].ToString()) - 1);
+                    _subscribe(value[2].ToString(), Int64.Parse(value[1].ToString()) + 1);
+                RaisePropertyChanged("Subscribe");
             }
         }
 
@@ -71,7 +72,7 @@ namespace PubNub_Messaging
         public string       SECRET_KEY = "";
         private bool        SSL = false;
         private string      sessionUUID = "";
-
+        
         public delegate bool Procedure(object message);
 
         public enum ResponseType
@@ -97,7 +98,8 @@ namespace PubNub_Messaging
             this.SUBSCRIBE_KEY = subscribe_key;
             this.SECRET_KEY = secret_key;
             this.SSL = ssl_on;
-            this.sessionUUID = Guid.NewGuid().ToString();
+            if (this.sessionUUID == "")
+                this.sessionUUID = Guid.NewGuid().ToString();
 
             // SSL is ON?
             if (this.SSL)
@@ -383,7 +385,7 @@ namespace PubNub_Messaging
 
             // Create Request
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(requestUri);
-
+            
             try
             {
                 // Make request with the following inline Asynchronous callback
@@ -400,15 +402,20 @@ namespace PubNub_Messaging
 
                             JavaScriptSerializer jS = new JavaScriptSerializer();
                             result = (List<object>)jS.Deserialize<List<object>>(jsonString);
-
-                            if (result[0] is object[])
+                            var resultOccupancy = jS.DeserializeObject(jsonString);
+                            
+                            if (result.Count != 0)
                             {
-                                foreach (object message in (object[])result[0])
+                                if (result[0] is object[])
                                 {
-                                    this.ReturnMessage = message;
+                                    foreach (object message in (object[])result[0])
+                                    {
+                                        this.ReturnMessage = message;
+                                        Console.WriteLine("Time token: " + result[1].ToString());
+                                    }
                                 }
                             }
-
+                            
                             switch (type)
                             {
                                 case ResponseType.Publish:
@@ -419,25 +426,32 @@ namespace PubNub_Messaging
                                     History = result;
                                     break;
                                 case ResponseType.Here_Now:
-                                    Here_Now = result;
+                                    Dictionary<string, object> dic = (Dictionary<string, object>)resultOccupancy;
+                                    List<object> presented = new List<object>();
+                                    presented.Add(dic);
+                                    Here_Now = (List<object>)presented;
                                     break;
                                 case ResponseType.Time:
                                     Time = result;
                                     break;
-                                default:
+                                case ResponseType.Subscribe:
                                     result.Add(url_components[2]);
                                     Subscribe = result;
+                                    break;
+                                default:                                    
                                     break;
                             }
                         }
                     }), request
+                    
                 );
                 return true;
             }
             catch (System.Exception ex)
             {
+                Console.WriteLine(ex.ToString());
                 return false;
-            }            
+            }
         }
 
         // Serialize the given object into JSON string

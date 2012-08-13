@@ -13,23 +13,26 @@ namespace PubNub_Messaging.Tests
         [TestMethod]
         public void ThenItShouldReturnReceivedMessage()
         {
+            string status = "";
             Pubnub pubnub = new Pubnub(
-                "demo",
-                "demo",
-                "",
-                false
-            );
+                   "demo",
+                   "demo",
+                   "",
+                   false);
             string channel = "my/channel";
 
-            pubnub.PropertyChanged += new PropertyChangedEventHandler(Pubnub_PropertyChanged);
-
-            pubnub.subscribe(channel);
-        }
-
-        static void Pubnub_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            Dictionary<string, object> _message = (Dictionary<string, object>)(((Pubnub)sender).ReturnMessage);
-            Assert.IsNotNull(_message["text"]);
+            pubnub.PropertyChanged += delegate(object sender, PropertyChangedEventArgs e)
+            {
+                if (e.PropertyName == "ReturnMessage")
+                {
+                    Dictionary<string, object> _message = (Dictionary<string, object>)(((Pubnub)sender).ReturnMessage);
+                    Console.WriteLine("Received Message -> '" + _message["text"] + "'");
+                    status = _message["text"].ToString();
+                    Assert.AreEqual("assert", status);
+                }
+            };
+            pubnub.subscribe(channel);           
+            
         }
     }
 }

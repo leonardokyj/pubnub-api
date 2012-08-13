@@ -7,6 +7,7 @@ using System.ComponentModel;
 
 namespace PubNub_Messaging.Tests
 {
+    [TestClass]
     public class WhenAClientIsPresented
     {
         [TestMethod]
@@ -18,7 +19,7 @@ namespace PubNub_Messaging.Tests
                 "",
                 false
             );
-            string channel = "my/channel";
+            string channel = "hello_world";
 
             pubnub.PropertyChanged += new PropertyChangedEventHandler(Pubnub_PropertyChanged);
 
@@ -47,11 +48,10 @@ namespace PubNub_Messaging.Tests
                "",
                false
            );
-            string channel = "my/channel";
+            string channel = "hello_world";
 
             pubnub.PropertyChanged += new PropertyChangedEventHandler(Pubnub_PropertyChanged);
 
-            pubnub.presence(channel);
             pubnub.here_now(channel);
         }
     }
