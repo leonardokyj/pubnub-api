@@ -119,7 +119,8 @@ C#: (Presence)
     {
         if (e.PropertyName == "ReturnMessage")
         {
-            Dictionary<string, object> _message = (Dictionary<string, object>)(((Pubnub)sender).ReturnMessage);
+            Dictionary<string, object> _message = 
+                        (Dictionary<string, object>)(((Pubnub)sender).ReturnMessage);
             Console.WriteLine("Received Message -> '" + _message["text"] + "'");
         }
     };
@@ -133,7 +134,8 @@ C#: (Here Now)
     {
         if (e.PropertyName == "Here_Now")
         {
-            Dictionary<string, object> _message = (Dictionary<string, object>)(((Pubnub)sender).Here_Now[0]);
+            Dictionary<string, object> _message = 
+                        (Dictionary<string, object>)(((Pubnub)sender).Here_Now[0]);
             foreach (object uuid in (object[])_message["uuids"])
             {
                 Console.WriteLine("UUID: " + uuid.ToString());
